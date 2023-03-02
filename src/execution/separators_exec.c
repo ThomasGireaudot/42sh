@@ -22,8 +22,7 @@ void separators_exec_loop(int *sep_list, shell *sh, str_s *list)
 
     if (check_cmd_content(list->str))
         result = pipes_exec(list->str, sh);
-    for (str_s *tmp = list->next; tmp != NULL && sep_list != NULL;
-    tmp = tmp->next) {
+    for (str_s *tmp = list->next; tmp != NULL && sep_list != NULL; tmp = tmp->next) {
         if (!check_cmd_content(tmp->str))
             continue;
         if (sep_list[sep_i] == 1 && result)

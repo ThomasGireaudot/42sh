@@ -30,7 +30,7 @@ void hist_l_free(hist_l *head)
 {
     if (!head)
         return;
-    if (head->next != NULL)
+    if (head->next)
         hist_l_free(head->next);
     free(head->str);
     free(head);

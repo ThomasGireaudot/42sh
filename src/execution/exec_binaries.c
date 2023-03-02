@@ -21,20 +21,22 @@ int list_size(str_s *env)
 
 char *path_create(char **path_split, char **command)
 {
-    char *bin1 = NULL;
-    char *bin2 = NULL;
+    char *bin = NULL;
+    int bin_path_size;
 
     for (int i = 0; path_split[i]; i++) {
-        bin1 = strdup(path_split[i]);
-        bin2 = strcat(bin1, "/");
-        free(bin1);
-        bin1 = strcat(bin2, command[0]);
-        free(bin2);
-        if (access(bin1, F_OK) == 0)
-            return (bin1);
-        free(bin1);
+        bin_path_size = strlen(path_split[i]) + strlen("/") + strlen(command[0]);
+        bin = malloc(sizeof(char) * (bin_path_size + 1));
+        if (!bin)
+            exit(84);
+        strcpy(bin, path_split[i]);
+        bin = strcat(bin, "/");
+        bin = strcat(bin, command[0]);
+        if (access(bin, F_OK) == 0)
+            return (bin);
+        free(bin);
     }
-    return (bin1);
+    return (bin);
 }
 
 char *search_path_var(char **env)

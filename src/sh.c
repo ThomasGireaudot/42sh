@@ -71,7 +71,7 @@ int sh(char **env)
         return (FAILURE);
     while (1) {
         input = prompt_command(isatty(STDIN_FILENO));
-        if (input == NULL)
+        if (input == NULL || strcmp(input, "exit") == 0)
             break;
         if (str_is_empty(input) == 1) {
             hist_l_add(sh->head, input);

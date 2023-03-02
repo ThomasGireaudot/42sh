@@ -11,15 +11,16 @@ int str_s_push(str_s *head, char *str)
 {
     str_s *tmp = head;
 
-    if (head == NULL || str == NULL)
+    if (!head || !str)
         return (0);
-    while (tmp->next != NULL)
+    while (tmp->next)
         tmp = tmp->next;
     tmp->next = malloc(sizeof(str_s));
-    if (tmp->next == NULL)
+    if (!tmp->next)
         return (0);
-    tmp->next->str = strdup(str);
-    if (tmp->next->str == NULL) {
+    tmp->next->str = malloc(sizeof(char) * (strlen(str) + 1));
+    strcpy(tmp->next->str, str);
+    if (!tmp->next->str) {
         free(tmp->next);
         tmp->next = NULL;
         return (0);
