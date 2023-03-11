@@ -68,19 +68,3 @@ debug: fclean $(OBJS)
 	$(CC) $(OBJS) -ggdb3 -o $(OUT)
 
 .PHONY: all clean fclean re debug
-
-#####################################################
-#
-# 					UNIT TEST RULES
-#
-#####################################################
-tests: all
-	$(MAKE) -C tests/ all
-
-tests_page: all
-	$(MAKE) -C tests/ html_page
-
-tests_fclean: fclean
-	$(MAKE) -C tests/ fclean
-
-.PHONY: tests tests_page tests_fclean

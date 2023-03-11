@@ -16,9 +16,9 @@ int setenv_error(char **cmd_parsed)
     return (0);
 }
 
-void set_var(shell *sh, char *to_push, char *name)
+void set_var(char *to_push, char *name)
 {
-    str_s *tmp = sh->env;
+    str_s *tmp = _SHELL->env;
 
     for (; tmp != NULL; tmp = tmp->next)
         if (strncmp(name, tmp->str, strlen(name)) == 0) {
@@ -26,10 +26,10 @@ void set_var(shell *sh, char *to_push, char *name)
             tmp->str = strdup(to_push);
             return;
         }
-    str_s_push(sh->env, to_push);
+    str_s_push(_SHELL->env, to_push);
 }
 
-int my_setenv_exec(char **cmd, shell *sh)
+int my_setenv_exec(char **cmd)
 {
     char **cmd_parsed = redirections_management_nodup(cmd);
     char *name;
@@ -39,10 +39,10 @@ int my_setenv_exec(char **cmd, shell *sh)
         return (0);
     name = strcat(cmd_parsed[1], "=");
     if (!cmd_parsed[2])
-        set_var(sh, name, cmd_parsed[1]);
+        set_var(name, cmd_parsed[1]);
     else {
         to_push = strcat(name, cmd_parsed[2]);
-        set_var(sh, to_push, cmd_parsed[1]);
+        set_var(to_push, cmd_parsed[1]);
         free(to_push);
     }
     free(name);
@@ -53,7 +53,7 @@ int my_setenv_exec(char **cmd, shell *sh)
     return (1);
 }
 
-int my_setenv(char **cmd, shell *sh)
+int my_setenv(char **cmd)
 {
     if (cmd == NULL) {
         write(2, "setenv: Allocation error.\n", 26);
@@ -65,5 +65,5 @@ int my_setenv(char **cmd, shell *sh)
         write(2, "setenv: Too many arguments.\n", 28);
         return (0);
     }
-    return (my_setenv_exec(cmd, sh));
+    return (my_setenv_exec(cmd));
 }

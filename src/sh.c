@@ -7,13 +7,16 @@
 
 #include "my_sh.h"
 
+shell *_SHELL;
+
 str_s *env_to_struct(char **env)
 {
     str_s *head = malloc(sizeof(str_s));
 
     if (head == NULL)
         return (head);
-    head->str = strdup(env[0]);
+    head->str = malloc(sizeof(char) * (strlen(env[0]) + 1));
+    strcpy(head->str, env[0]);
     if (head->str == NULL) {
         free(head);
         return (NULL);
@@ -25,62 +28,68 @@ str_s *env_to_struct(char **env)
     return (head);
 }
 
-void init_pos_struc(shell *sh)
+void init_pos_struc(void)
 {
-    sh->pos = malloc(sizeof(position_t));
-    sh->pos->act = NULL;
-    sh->pos->prev = NULL;
-    sh->pos->prev = malloc(sizeof(char) * 256);
-    if (!sh->pos->prev)
-        return;
-    sh->pos->act = malloc(sizeof(char) * 256);
-    if (!sh->pos->act)
-        return;
-    getcwd(sh->pos->act, 256);
-    getcwd(sh->pos->prev, 256);
+    _SHELL->pos = malloc(sizeof(position_t));
+    _SHELL->pos->act = NULL;
+    _SHELL->pos->prev = malloc(sizeof(char) * 256);
+    if (!_SHELL->pos->prev)
+        exit(84);
+    _SHELL->pos->act = malloc(sizeof(char) * 256);
+    if (!_SHELL->pos->act)
+        exit(84);
+    getcwd(_SHELL->pos->act, 256);
+    getcwd(_SHELL->pos->prev, 256);
 }
 
-shell *setup_shell_struct(char **env)
+void setup_shell_struct(char **env)
 {
-    shell *sh = malloc(sizeof(shell));
+    _SHELL = malloc(sizeof(shell));
 
-    if (sh == NULL)
-        return (NULL);
+    if (_SHELL == NULL)
+        return;
     if (env != NULL)
-        sh->env = env_to_struct(env);
+        _SHELL->env = env_to_struct(env);
     else
-        sh->env = NULL;
-    init_pos_struc(sh);
-    sh->head = NULL;
-    return (sh);
+        _SHELL->env = NULL;
+    init_pos_struc();
+    _SHELL->head = NULL;
 }
 
-void shell_free(shell *sh)
+void shell_free(void)
 {
-    str_s_free(sh->env);
-    hist_l_free(sh->head);
-    free(sh->pos);
+    if (_SHELL->env)
+        str_s_free(_SHELL->env);
+    if (_SHELL->head)
+        hist_l_free(_SHELL->head);
+    if (_SHELL->pos) {
+        free(_SHELL->pos->prev);
+        free(_SHELL->pos->act);
+        free(_SHELL->pos);
+    }
+    free(_SHELL);
 }
 
 int sh(char **env)
 {
     char *input;
-    shell *sh = setup_shell_struct(env);
+    setup_shell_struct(env);
 
-    if (sh == NULL)
+    if (_SHELL == NULL)
         return (FAILURE);
+    atexit(shell_free);
     while (1) {
         input = prompt_command(isatty(STDIN_FILENO));
         if (input == NULL || strcmp(input, "exit") == 0)
             break;
         if (str_is_empty(input) == 1) {
-            hist_l_add(sh->head, input);
-            if (check_format(input)) {
-                separators_exec(input, sh);
-            }
+            hist_l_add(input);
+            if (check_format(input))
+                separators_exec(input);
         } else
             free(input);
     }
-    shell_free(sh);
+    if (input)
+        free(input);
     return (SUCCESS);
 }

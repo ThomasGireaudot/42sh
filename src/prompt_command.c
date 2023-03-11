@@ -15,7 +15,7 @@ int str_is_empty(char *str)
     return (0);
 }
 
-char *clean_input(char *input)
+void clean_input(char *input)
 {
     for (int i = 0; input[i] != '\0'; i++) {
         if (input[i] == '\n')
@@ -35,7 +35,6 @@ char *clean_input(char *input)
             input[i + 1] = ' ';
         }
     }
-    return (input);
 }
 
 char *prompt_command(int tty)
@@ -52,7 +51,7 @@ char *prompt_command(int tty)
     free(dir);
     size = getline(&input, &size, stdin);
     if (size != eof)
-        input = clean_input(input);
+        clean_input(input);
     else {
         free(input);
         printf(tty ? "exit\n" : "");

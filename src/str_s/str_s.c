@@ -46,12 +46,11 @@ str_s *split_str_to_list(char *arg, char *separators)
 
 void str_s_free(str_s *head)
 {
-    if (head == NULL)
-        return;
-    if (head->next != NULL)
-        str_s_free(head->next);
-    free(head->str);
-    free(head);
+    for (str_s *tmp = head; head; tmp = head) {
+        head = head->next;
+        free(tmp->str);
+        free(tmp);
+    }
 }
 
 void str_s_free_simple(str_s *head)

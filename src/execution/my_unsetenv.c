@@ -15,7 +15,7 @@ int my_arrlen(char **arr)
     return (len - 1);
 }
 
-int my_unsetenv(char **cmd, shell *sh)
+int my_unsetenv(char **cmd)
 {
     char **parsed;
 
@@ -27,7 +27,7 @@ int my_unsetenv(char **cmd, shell *sh)
     parsed = redirections_management_nodup(cmd);
     free(cmd);
     for (int i = 0; parsed[i] != NULL; i++) {
-        str_s_pop_ncmp(sh->env, parsed[i]);
+        str_s_pop_ncmp(_SHELL->env, parsed[i]);
     }
     for (int i = 0; parsed[i] != NULL; i++)
         free(parsed[i]);

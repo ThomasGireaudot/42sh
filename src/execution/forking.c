@@ -21,13 +21,13 @@ void duplicate_pipes(int *old, int *new)
     }
 }
 
-int forking(char *cmd, shell *sh, int *old, int *new)
+int forking(char *cmd, int *old, int *new)
 {
-    sh->pid = fork();
+    _SHELL->pid = fork();
 
-    if (sh->pid == 0) {
+    if (_SHELL->pid == 0) {
         duplicate_pipes(old, new);
-        child(cmd, sh);
+        child(cmd);
     }
     if (old != NULL) {
         close(old[0]);

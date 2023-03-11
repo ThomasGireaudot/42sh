@@ -14,18 +14,18 @@ int *int_arr_cpy(int *src, int *dest, int size)
     return (dest);
 }
 
-int pipes_exec_switch(int *old, int *new, str_s *tmp, shell *sh)
+int pipes_exec_switch(int *old, int *new, str_s *tmp)
 {
     if (tmp->previous == NULL && tmp->next == NULL)
-        return (cmd_execute(tmp->str, NULL, NULL, sh));
+        return (cmd_execute(tmp->str, NULL, NULL));
     if (tmp->previous == NULL)
-        return (cmd_execute(tmp->str, NULL, new, sh));
+        return (cmd_execute(tmp->str, NULL, new));
     if (tmp->next == NULL)
-        return (cmd_execute(tmp->str, old, NULL, sh));
-    return (cmd_execute(tmp->str, old, new, sh));
+        return (cmd_execute(tmp->str, old, NULL));
+    return (cmd_execute(tmp->str, old, new));
 }
 
-int pipes_exec(char *cmd, shell *sh)
+int pipes_exec(char *cmd)
 {
     str_s *list = split_str_to_list(cmd, "|");
     int *old = malloc(sizeof(int) * 2);
@@ -37,11 +37,11 @@ int pipes_exec(char *cmd, shell *sh)
             old = int_arr_cpy(new, old, 2);
         if (tmp->next != NULL)
             pipe(new);
-        ret = pipes_exec_switch(old, new, tmp, sh);
+        ret = pipes_exec_switch(old, new, tmp);
     }
     free(old);
     free(new);
     str_s_free_simple(list);
-    waiting(sh->head, sh->pid);
+    waiting(_SHELL->head, _SHELL->pid);
     return (ret);
 }

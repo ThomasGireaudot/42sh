@@ -62,28 +62,23 @@ int relative_error(char *path, char *cmd)
     return (1);
 }
 
-void exec_binaries(shell *sh, char **command)
+void exec_binaries(char **command)
 {
     char **path_split = NULL;
-    char **env = list_to_tab(sh->env);
+    char **env = list_to_tab(_SHELL->env);
     char *cmd_path = NULL;
 
     if (strncmp(command[0], "/", 1) != 0 && strncmp(command[0], "./", 2) != 0 \
     && strncmp(command[0], "../", 3) != 0) {
         path_split = split_str_to_strarr(search_path_var(env), ":");
         if (path_split == NULL) {
-            command_not_found(command, sh, env);
+            command_not_found(command, env);
         } else {
             cmd_path = path_create(path_split, command);
-            if (relative_error(cmd_path, command[0]) == 0) {
-                shell_free(sh);
+            if (relative_error(cmd_path, command[0]) == 0)
                 exit(0);
-            }
         }
-    } else if (relative_error(command[0], command[0]) == 0) {
-        shell_free(sh);
+    } else if (relative_error(command[0], command[0]) == 0)
         exit(0);
-    }
-    shell_free(sh);
     execve((!cmd_path ? command[0] : cmd_path), command, env);
 }
